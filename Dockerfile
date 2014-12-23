@@ -10,7 +10,7 @@ RUN echo "deb http://archive.ubuntu.com/ubuntu precise main universe" > /etc/apt
 RUN apt-get update
 
 # Install dependencies
-RUN apt-get install -y sudo build-essential pkg-config
+RUN apt-get install -y libc6-dev build-essential pkg-config
 RUN apt-get install -y sqlite3 fabric
 RUN apt-get install -y python-dev python-pip python-setuptools python-virtualenv
 
