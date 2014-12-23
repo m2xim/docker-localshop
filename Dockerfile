@@ -10,9 +10,9 @@ RUN echo "deb http://archive.ubuntu.com/ubuntu precise main universe" > /etc/apt
 RUN apt-get update
 
 # Install dependencies
-RUN apt-get install -qq -y sudo build-essential pkg-config
-RUN apt-get install -qq -y sqlite3 fabric
-RUN apt-get install -qq -y python-dev python-pip python-setuptools python-virtualenv
+RUN apt-get install -y sudo build-essential pkg-config
+RUN apt-get install -y sqlite3 fabric
+RUN apt-get install -y python-dev python-pip python-setuptools python-virtualenv
 
 
 # Configure a localshop user
