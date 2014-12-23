@@ -2,7 +2,7 @@
 #
 # See the file LICENSE for copying permission.
 
-FROM ubuntu
+FROM ubuntu:14.04
 MAINTAINER tcrevon@gmail.com
 
 # make sure the package repository is up to date
