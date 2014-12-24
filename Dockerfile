@@ -11,7 +11,7 @@ RUN apt-get update
 # Install dependencies
 RUN apt-get install -y libc6-dev build-essential pkg-config
 RUN apt-get install -y sqlite3 fabric
-RUN apt-get install -y python-dev python-pip python-setuptools python-virtualenv
+RUN apt-get install -y python-dev python-pip python-setuptools python-virtualenv libmysqlclient-dev
 
 
 # Configure a localshop user
