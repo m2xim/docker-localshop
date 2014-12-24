@@ -8,6 +8,7 @@ import ConfigParser
 from fabric.context_managers import prefix
 from fabric.api import *
 
+
 activate_virtualenv = "/bin/bash -c 'source /home/localshop/venv/bin/activate'"
 
 
@@ -33,16 +34,23 @@ def localshop_init():
 
     # Compute localshop super creation instruction
     # from environement variables
-    superuser_create = "from django.contrib.auth.models import User; "\
-                       "User.objects.create_superuser('{user}', '{mail}', '{password}')"
-    superuser_create = superuser_create.format(
-        user=localshop_user,
-        mail=localshop_mail,
-        password=localshop_pass
-    )
+    superuser_create = ensure_user_command(localshop_user, localshop_pass, localshop_mail)
 
     with prefix(activate_virtualenv):
         local("su localshop -c 'localshop syncdb --noinput'")  # Ensure db is created by localshop
         local("localshop migrate")
         local('echo "{inst}" | localshop shell'.format(inst=superuser_create))
+
+
+def ensure_user_command(user, password, mail):
+    return """
+from django.contrib.auth.models import User
+from django.core.exceptions import ObjectDoesNotExist
+
+try:
+    User.objects.get_by_natural_key('{user}')
+except ObjectDoesNotExist:
+    User.objects.create_superuser('{user}', '{mail}', '{password}')
+""".format(user=user, password=password, mail=mail)
+
 

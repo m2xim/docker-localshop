@@ -50,5 +50,5 @@ RUN chmod 775 /home/localshop/.localshop/localshop.db
 EXPOSE 8000
 
 # Let's run that shit
-CMD ["su", "localshop", "-c", "source /home/localshop/venv/bin/activate && localshop run_gunicorn 0.0.0.0:8000 & localshop celeryd -B -E"]
+CMD ["su", "localshop", "-c", "cd /home/localshop && fab localshop_init && source /home/localshop/venv/bin/activate && localshop run_gunicorn 0.0.0.0:8000 & localshop celeryd -B -E"]
 
