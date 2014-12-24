@@ -16,6 +16,7 @@ def localshop_install():
     """Installs localshop in preexisting virtualenv"""
     with prefix(activate_virtualenv):
         local("pip install localshop")
+        local("pip install MySQL-python")
 
 
 @task
