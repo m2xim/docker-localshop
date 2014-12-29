@@ -3,14 +3,13 @@
 # See the file LICENSE for copying permission.
 
 import os
-import ConfigParser
 
 from fabric.context_managers import prefix
 from fabric.api import *
+from string import Template
 
 
 activate_virtualenv = "/bin/bash -c 'source /home/localshop/venv/bin/activate'"
-
 
 @task
 def localshop_install():
@@ -22,28 +21,83 @@ def localshop_install():
 
 @task
 def localshop_init():
-    """Emulates the localshop init phase"""
-    # Extract the user, pass and mail from config file,
-    # assuming docker build has set them already
-    config = ConfigParser.ConfigParser()
-    config.read("localshop.conf")
+    config = get_config()
 
-    localshop_user = config.get('superuser', 'username')
-    localshop_pass = config.get('superuser', 'password')
-    localshop_mail = config.get('superuser', 'mail')
-
-    # Compute localshop super creation instruction
-    # from environement variables
-    superuser_create = ensure_user_command(localshop_user, localshop_pass, localshop_mail)
+    create_configuration_file(config)
 
     with prefix(activate_virtualenv):
-        local("su localshop -c 'localshop syncdb --noinput'")  # Ensure db is created by localshop
+        local("localshop syncdb --noinput")  # Ensure db is created by localshop
         local("localshop migrate")
-        local('echo "{inst}" | localshop shell'.format(inst=superuser_create))
+        create_user(config['username'], config['password'], config['email'])
+        if config['access_key'] and config['secret_key']:
+            load_credentials(config['access_key'], config['secret_key'])
+        if config['cidr_value']:
+            load_cidr(config['cidr_value'], config['cidr_label'], config['cidr_require_credentials'])
+
+def get_config():
+    config = {
+        "username": "localshop",
+        "password": "localshop",
+        "email": "admin@localshop.example.org",
+        "access_key": "",
+        "secret_key": "",
+        "cidr_value": "0.0.0.0/0",
+        "cidr_require_credentials": "1",
+        "cidr_label": "everyone",
+        "database_engine": "django.db.backends.sqlite3",
+        "database_name": "/home/localshop/data/localshop.db",
+        "database_user": "",
+        "database_password": "",
+        "database_host": "",
+        "database_port": "",
+        "timezone": "America/Montreal",
+        "delete_files": "0",
+        }
+
+    for item in config:
+        key = 'LOCALSHOP_' + item.upper()
+        if key in os.environ:
+            config[item] = os.environ[key]
+
+    #Sanitize booleans
+    config['cidr_require_credentials'] = config['cidr_require_credentials'] == '1'
+    config['delete_files'] = config['delete_files'] == '1'
+
+    return config
+
+def create_configuration_file(config):
+    with open('localshop.conf.tpl') as template_file:
+        template = Template(template_file.read())
+        json_string = template.substitute(config)
+
+        with open('/home/localshop/.localshop/localshop.conf.py', 'w') as json_file:
+            json_file.write(json_string)
 
 
-def ensure_user_command(user, password, mail):
-    return """
+def load_credentials(access_key=None, secret_key=None):
+    with open('credentials.json.tpl') as template_file:
+        template = Template(template_file.read())
+        json_string = template.substitute({'access_key': access_key, 'secret_key': secret_key})
+
+        with open('credentials.json', 'w') as json_file:
+            json_file.write(json_string)
+
+    local("localshop loaddata credentials.json")
+
+def load_cidr(cidr, label, require_credentials):
+    with open('cidr.json.tpl') as template_file:
+        template = Template(template_file.read())
+        json_string = template.substitute({'require_credentials': 'true' if require_credentials else 'false',
+                                           'cidr': cidr,
+                                           'label': label})
+
+        with open('cidr.json', 'w') as json_file:
+            json_file.write(json_string)
+
+    local("localshop loaddata cidr.json")
+
+def create_user(user, password, email):
+    user_command = """
 from django.contrib.auth.models import User
 from django.core.exceptions import ObjectDoesNotExist
 
@@ -51,6 +105,8 @@ try:
     User.objects.get_by_natural_key('{user}')
 except ObjectDoesNotExist:
     User.objects.create_superuser('{user}', '{mail}', '{password}')
-""".format(user=user, password=password, mail=mail)
+""".format(user=user, password=password, mail=email)
+
+    local('echo "{inst}" | localshop shell'.format(inst=user_command))
 
 
