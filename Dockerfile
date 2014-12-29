@@ -50,5 +50,5 @@ RUN chmod 775 /home/localshop/run_localshop.sh
 EXPOSE 8000
 
 # Let's run
-CMD ["/home/localshop/run_localshop.sh"]
+CMD ["su", "localshop", "-c", "/home/localshop/run_localshop.sh"]
 
