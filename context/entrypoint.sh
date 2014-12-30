@@ -15,7 +15,7 @@ set -e
 # LOCALSHOP_CIDR_LABEL everyone
 
 # LOCALSHOP_DATABASE_ENGINE django.db.backends.sqlite3
-# LOCALSHOP_DATABASE_NAME /home/localshop/data/localshop.db
+# LOCALSHOP_DATABASE_NAME /home/localshop/.localshop/localshop.db
 # LOCALSHOP_DATABASE_USER
 # LOCALSHOP_DATABASE_PASSWORD
 # LOCALSHOP_DATABASE_HOST
@@ -23,10 +23,12 @@ set -e
 # LOCALSHOP_TIMEZONE America/Montreal
 # LOCALSHOP_DELETE_FILES False
 
+DATADIR=/home/localshop/source
+
 cd /home/localshop
 
-fab localshop_init
+chown -R localshop:localshop "$DATADIR"
 
-source /home/localshop/venv/bin/activate
-localshop run_gunicorn 0.0.0.0:8000 &
-localshop celeryd -B -E
+gosu localshop:localshop fab localshop_init
+
+exec su localshop -c "$@"

@@ -4,19 +4,15 @@
 
 import os
 
-from fabric.context_managers import prefix
 from fabric.api import *
 from string import Template
 
 
-activate_virtualenv = "/bin/bash -c 'source /home/localshop/venv/bin/activate'"
-
 @task
 def localshop_install():
     """Installs localshop in preexisting virtualenv"""
-    with prefix(activate_virtualenv):
-        local("pip install localshop")
-        local("pip install MySQL-python")
+    local("pip install localshop")
+    local("pip install MySQL-python")
 
 
 @task
@@ -25,14 +21,13 @@ def localshop_init():
 
     create_configuration_file(config)
 
-    with prefix(activate_virtualenv):
-        local("localshop syncdb --noinput")  # Ensure db is created by localshop
-        local("localshop migrate")
-        create_user(config['username'], config['password'], config['email'])
-        if config['access_key'] and config['secret_key']:
-            load_credentials(config['access_key'], config['secret_key'])
-        if config['cidr_value']:
-            load_cidr(config['cidr_value'], config['cidr_label'], config['cidr_require_credentials'])
+    local("localshop syncdb --noinput")  # Ensure db is created by localshop
+    local("localshop migrate")
+    create_user(config['username'], config['password'], config['email'])
+    if config['access_key'] and config['secret_key']:
+        load_credentials(config['access_key'], config['secret_key'])
+    if config['cidr_value']:
+        load_cidr(config['cidr_value'], config['cidr_label'], config['cidr_require_credentials'])
 
 def get_config():
     config = {
@@ -45,7 +40,7 @@ def get_config():
         "cidr_require_credentials": "1",
         "cidr_label": "everyone",
         "database_engine": "django.db.backends.sqlite3",
-        "database_name": "/home/localshop/data/localshop.db",
+        "database_name": "/home/localshop/.localshop/localshop.db",
         "database_user": "",
         "database_password": "",
         "database_host": "",
