@@ -31,7 +31,7 @@ ADD ./fabfile /home/localshop/fabfile
 
 #Create needed directories
 RUN mkdir /home/localshop/.localshop
-RUN mkdir /home/localshop/source
+RUN mkdir /home/localshop/packages
 
 RUN cd /home/localshop && fab localshop_install
 

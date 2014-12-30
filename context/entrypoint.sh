@@ -23,7 +23,7 @@ set -e
 # LOCALSHOP_TIMEZONE America/Montreal
 # LOCALSHOP_DELETE_FILES False
 
-DATADIR=/home/localshop/source
+DATADIR=/home/localshop/packages
 
 cd /home/localshop
 
@@ -31,4 +31,5 @@ chown -R localshop:localshop "$DATADIR"
 
 gosu localshop:localshop fab localshop_init
 
+cd "$DATADIR"
 exec su localshop -c "$@"
