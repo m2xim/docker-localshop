@@ -15,9 +15,9 @@ The Localshop image uses several environment variables that may significantly ai
 
 ### Superuser
 
-* `LOCALSHOP_USERNAME=localshop`
-* `LOCALSHOP_PASSWORD=localshop`
-* `LOCALSHOP_EMAIL=admin@localshop.example.org`
+* `LOCALSHOP_USERNAME` *localshop*
+* `LOCALSHOP_PASSWORD` *localshop*
+* `LOCALSHOP_EMAIL` *admin@localshop.example.org*
 
 Locashop is built upon the [Django](https://www.djangoproject.com/) framework, and requires to set up a ``superuser``. As a default this recipe
 will create a ``localshop`` superuser with ``localshop`` password. However, if you'd wanna tune it a little bit setup these environment variables to change the default.
@@ -25,8 +25,8 @@ Note that if the username already exists in the database, it won't be modified, 
 
 ### Runtime parameters
 
-* `LOCALSHOP_GUNICORN_ARGS=-w 4 -t 60`
-* `LOCALSHOP_CELERYD_ARGS=-B -E`
+* `LOCALSHOP_GUNICORN_ARGS` *-w 4 -t 60*
+* `LOCALSHOP_CELERYD_ARGS` *-B -E*
 
 You can override here the default parameters given to gunicorn and celeryd. This allows you to modify the timeout, the number of workers or anything gunicorn and celeryd supports as a parameter.
 
@@ -40,17 +40,17 @@ No default as be set to these.
 
 ### CIDR
 
-* `LOCALSHOP_CIDR_VALUE=0.0.0.0/0`
-* `LOCALSHOP_CIDR_REQUIRE_CREDENTIALS=1` If 0, any request with no access/secret key will be allowed.
-* `LOCALSHOP_CIDR_LABEL=everyone`
+* `LOCALSHOP_CIDR_VALUE` *0.0.0.0/0*
+* `LOCALSHOP_CIDR_REQUIRE_CREDENTIALS` *1* 
+* `LOCALSHOP_CIDR_LABEL` *everyone*
 
-By default, localshop blocks any non-authenticated requests to its repository. You can change the cidr settings with these. 
+By default, localshop blocks any non-authenticated requests to its repository. You can change the cidr settings with these. If `LOCALSHOP_CIDR_REQUIRE_CREDENTIALS` is set to `0`, any request with no access/secret key will be allowed.
 Note that the docker image creates the cidr entry in the database, and will override any manual change at every startup of the container. 
 
 ### Database settings
 
-* `LOCALSHOP_DATABASE_ENGINE=django.db.backends.sqlite3`
-* `LOCALSHOP_DATABASE_NAME=/home/localshop/.localshop/localshop.db`
+* `LOCALSHOP_DATABASE_ENGINE` *django.db.backends.sqlite3*
+* `LOCALSHOP_DATABASE_NAME` */home/localshop/.localshop/localshop.db*
 * `LOCALSHOP_DATABASE_USER`
 * `LOCALSHOP_DATABASE_PASSWORD`
 * `LOCALSHOP_DATABASE_HOST`
@@ -70,10 +70,10 @@ For example you can link the localshop container with a mysql container and setu
 
 
 ### Timezone
-* `LOCALSHOP_TIMEZONE=America/Montreal`
+* `LOCALSHOP_TIMEZONE` *America/Montreal*
 
 ### Delete files
-* `LOCALSHOP_DELETE_FILES=0`
+* `LOCALSHOP_DELETE_FILES` *0*
 
 If set to `1` files will be cleaned up after deleting a package or release from the localshop.
 
