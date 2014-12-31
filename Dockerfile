@@ -1,4 +1,5 @@
 # Copyright (c) 2013 theo crevon
+#               2014 Corentin Ardeois
 #
 # See the file LICENSE for copying permission.
 
