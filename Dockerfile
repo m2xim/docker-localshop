@@ -11,7 +11,7 @@ RUN apt-get update
 # Install dependencies
 RUN apt-get install -y libc6-dev build-essential pkg-config curl
 RUN apt-get install -y sqlite3 libmysqlclient-dev
-RUN apt-get install -y python-dev python-pip python-setuptools fabric
+RUN apt-get install -y python-dev python-pip python-setuptools fabric supervisor
 
 # Install gosu
 RUN curl -o /usr/local/bin/gosu -sSL "https://github.com/tianon/gosu/releases/download/1.2/gosu-$(dpkg --print-architecture)" && chmod +x /usr/local/bin/gosu
@@ -29,6 +29,9 @@ ENV HOME /home/localshop
 ADD ./context /home/localshop/
 ADD ./fabfile /home/localshop/fabfile
 
+# Copy supervisor config
+COPY supervisord.conf /etc/supervisor/conf.d/supervisord.conf
+
 #Create needed directories
 RUN mkdir /home/localshop/.localshop
 RUN mkdir /home/localshop/packages
@@ -45,4 +48,4 @@ ENTRYPOINT ["/home/localshop/entrypoint.sh"]
 #Forward ports
 EXPOSE 8000
 
-CMD ["localshop run_gunicorn 0.0.0.0:8000 & localshop celeryd -B -E"]
+CMD ["/usr/bin/supervisord"]

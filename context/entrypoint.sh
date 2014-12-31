@@ -31,5 +31,7 @@ chown -R localshop:localshop "$DATADIR"
 
 gosu localshop:localshop fab localshop_init
 
-cd "$DATADIR"
-exec su localshop -c "$@"
+export GUNICORN_ARGS="${LOCALSHOP_GUNICORN_ARGS:--w 4 -t 60}"
+export CELERYD_ARGS="${LOCALSHOP_CELERYD_ARGS:-B -E}"
+
+exec "$@"
