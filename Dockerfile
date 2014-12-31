@@ -37,6 +37,10 @@ COPY supervisord.conf /etc/supervisor/conf.d/supervisord.conf
 RUN mkdir /home/localshop/.localshop
 RUN mkdir /home/localshop/packages
 
+
+#To update version, check https://pypi.python.org/pypi/localshop/
+ENV LOCALSHOP_VERSION 0.5.0
+
 RUN cd /home/localshop && fab localshop_install
 
 #Ensure localshop can write

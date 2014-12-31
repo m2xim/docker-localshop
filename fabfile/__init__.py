@@ -11,7 +11,8 @@ from string import Template
 @task
 def localshop_install():
     """Installs localshop in preexisting virtualenv"""
-    local("pip install localshop")
+    version = os.environ['LOCALSHOP_VERSION']
+    local("pip install localshop=={0}".format(version))
     local("pip install MySQL-python")
 
 
