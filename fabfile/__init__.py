@@ -1,6 +1,7 @@
 # Copyright (c) 2013 theo crevon
 #
 # See the file LICENSE for copying permission.
+import json
 
 import os
 
@@ -29,6 +30,7 @@ def localshop_init():
         load_credentials(config['access_key'], config['secret_key'])
     if config['cidr_value']:
         load_cidr(config['cidr_value'], config['cidr_label'], config['cidr_require_credentials'])
+
 
 def get_config():
     config = {
@@ -61,8 +63,9 @@ def get_config():
 
     return config
 
+
 def create_configuration_file(config):
-    with open('localshop.conf.tpl') as template_file:
+    with open('setup/templates/localshop.conf.tpl') as template_file:
         template = Template(template_file.read())
         json_string = template.substitute(config)
 
@@ -71,38 +74,52 @@ def create_configuration_file(config):
 
 
 def load_credentials(access_key=None, secret_key=None):
-    with open('credentials.json.tpl') as template_file:
+    user = get_super_user()
+    with open('setup/templates/credentials.json.tpl') as template_file:
         template = Template(template_file.read())
-        json_string = template.substitute({'access_key': access_key, 'secret_key': secret_key})
+        json_string = template.substitute({'access_key': access_key, 'secret_key': secret_key, 'user_id': user['id']})
 
-        with open('credentials.json', 'w') as json_file:
+        with open('setup/credentials.json', 'w') as json_file:
             json_file.write(json_string)
 
-    local("localshop loaddata credentials.json")
+    local("localshop loaddata setup/credentials.json")
+
 
 def load_cidr(cidr, label, require_credentials):
-    with open('cidr.json.tpl') as template_file:
+    with open('setup/templates/cidr.json.tpl') as template_file:
         template = Template(template_file.read())
         json_string = template.substitute({'require_credentials': 'true' if require_credentials else 'false',
                                            'cidr': cidr,
                                            'label': label})
 
-        with open('cidr.json', 'w') as json_file:
+        with open('setup/cidr.json', 'w') as json_file:
             json_file.write(json_string)
 
-    local("localshop loaddata cidr.json")
+    local("localshop loaddata setup/cidr.json")
+
 
 def create_user(user, password, email):
     user_command = """
+import json
 from django.contrib.auth.models import User
 from django.core.exceptions import ObjectDoesNotExist
 
 try:
-    User.objects.get_by_natural_key('{user}')
+    user = User.objects.get_by_natural_key('{user}')
 except ObjectDoesNotExist:
-    User.objects.create_superuser('{user}', '{mail}', '{password}')
+    user = User.objects.create_superuser('{user}', '{mail}', '{password}')
+
+with open('/home/localshop/setup/super_user.json', 'w+') as f:
+    f.write(json.dumps({{'id': user.id}}))
 """.format(user=user, password=password, mail=email)
 
     local('echo "{inst}" | localshop shell'.format(inst=user_command))
+
+
+def get_super_user():
+    with open('setup/super_user.json', 'r') as f:
+        data = f.read()
+
+    return json.loads(data)
 
 

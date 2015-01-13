@@ -7,7 +7,7 @@
          "comment": "",
          "created": "2014-12-29T16:48:50Z",
          "deactivated": null,
-         "creator": 1,
+         "creator": ${user_id},
          "secret_key": "${secret_key}"
       }
    }
