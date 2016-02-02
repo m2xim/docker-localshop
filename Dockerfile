@@ -39,7 +39,7 @@ RUN mkdir /home/localshop/packages
 
 
 #To update version, check https://pypi.python.org/pypi/localshop/
-ENV LOCALSHOP_VERSION 0.5.0
+ENV LOCALSHOP_VERSION 0.9.3
 
 RUN cd /home/localshop && fab localshop_install
 

@@ -1,6 +1,10 @@
 # Copyright (c) 2013 theo crevon
 #
 # See the file LICENSE for copying permission.
+#
+# Modified (c) 2016 david rieger
+#
+# v1.1
 import json
 
 import os
@@ -25,6 +29,7 @@ def localshop_init():
 
     local("localshop syncdb --noinput")  # Ensure db is created by localshop
     local("localshop migrate")
+
     create_user(config['username'], config['password'], config['email'])
     if config['access_key'] and config['secret_key']:
         load_credentials(config['access_key'], config['secret_key'])
@@ -57,7 +62,7 @@ def get_config():
         if key in os.environ:
             config[item] = os.environ[key]
 
-    #Sanitize booleans
+    # Sanitize booleans
     config['cidr_require_credentials'] = config['cidr_require_credentials'] == '1'
     config['delete_files'] = config['delete_files'] == '1'
 
@@ -121,5 +126,3 @@ def get_super_user():
         data = f.read()
 
     return json.loads(data)
-
-
