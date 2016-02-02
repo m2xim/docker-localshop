@@ -1,10 +1,11 @@
-# Copyright (c) 2013 theo crevon
-#
-# See the file LICENSE for copying permission.
-#
-# Modified (c) 2016 david rieger
-#
-# v1.1
+"""
+docker-localshop v1.1.
+
+Copyright (c) 2013 theo crevon
+Modified (c) 2016 david rieger
+
+See the file LICENSE for copying permission
+"""
 import json
 
 import os
@@ -15,7 +16,7 @@ from string import Template
 
 @task
 def localshop_install():
-    """Installs localshop in preexisting virtualenv"""
+    """Installs localshop in preexisting virtualenv."""
     version = os.environ['LOCALSHOP_VERSION']
     local("pip install localshop=={0}".format(version))
     local("pip install MySQL-python")
