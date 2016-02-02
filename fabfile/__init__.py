@@ -1,6 +1,11 @@
-# Copyright (c) 2013 theo crevon
-#
-# See the file LICENSE for copying permission.
+"""
+docker-localshop v1.1.
+
+Copyright (c) 2013 theo crevon
+Modified (c) 2016 david rieger
+
+See the file LICENSE for copying permission
+"""
 import json
 
 import os
@@ -11,7 +16,7 @@ from string import Template
 
 @task
 def localshop_install():
-    """Installs localshop in preexisting virtualenv"""
+    """Installs localshop in preexisting virtualenv."""
     version = os.environ['LOCALSHOP_VERSION']
     local("pip install localshop=={0}".format(version))
     local("pip install MySQL-python")
@@ -25,6 +30,7 @@ def localshop_init():
 
     local("localshop syncdb --noinput")  # Ensure db is created by localshop
     local("localshop migrate")
+
     create_user(config['username'], config['password'], config['email'])
     if config['access_key'] and config['secret_key']:
         load_credentials(config['access_key'], config['secret_key'])
@@ -57,7 +63,7 @@ def get_config():
         if key in os.environ:
             config[item] = os.environ[key]
 
-    #Sanitize booleans
+    # Sanitize booleans
     config['cidr_require_credentials'] = config['cidr_require_credentials'] == '1'
     config['delete_files'] = config['delete_files'] == '1'
 
@@ -77,7 +83,9 @@ def load_credentials(access_key=None, secret_key=None):
     user = get_super_user()
     with open('setup/templates/credentials.json.tpl') as template_file:
         template = Template(template_file.read())
-        json_string = template.substitute({'access_key': access_key, 'secret_key': secret_key, 'user_id': user['id']})
+        json_string = template.substitute({'access_key': access_key,
+                                           'secret_key': secret_key,
+                                           'user_id': user['id']})
 
         with open('setup/credentials.json', 'w') as json_file:
             json_file.write(json_string)
@@ -121,5 +129,3 @@ def get_super_user():
         data = f.read()
 
     return json.loads(data)
-
-
