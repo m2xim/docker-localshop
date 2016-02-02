@@ -83,7 +83,9 @@ def load_credentials(access_key=None, secret_key=None):
     user = get_super_user()
     with open('setup/templates/credentials.json.tpl') as template_file:
         template = Template(template_file.read())
-        json_string = template.substitute({'access_key': access_key, 'secret_key': secret_key, 'user_id': user['id']})
+        json_string = template.substitute({'access_key': access_key,
+                                           'secret_key': secret_key,
+                                           'user_id': user['id']})
 
         with open('setup/credentials.json', 'w') as json_file:
             json_file.write(json_string)
