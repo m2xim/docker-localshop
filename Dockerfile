@@ -10,9 +10,13 @@ MAINTAINER cardeois@iweb.com
 RUN apt-get update
 
 # Install dependencies
+RUN apt-get update
 RUN apt-get install -y libc6-dev build-essential pkg-config curl
 RUN apt-get install -y sqlite3 libmysqlclient-dev
 RUN apt-get install -y python-dev python-pip python-setuptools fabric supervisor
+RUN apt-get install -y postgresql-server-dev-all
+RUN pip install psycopg2
+
 
 # Install gosu
 RUN curl -o /usr/local/bin/gosu -sSL "https://github.com/tianon/gosu/releases/download/1.2/gosu-$(dpkg --print-architecture)" && chmod +x /usr/local/bin/gosu
