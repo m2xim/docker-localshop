@@ -16,7 +16,7 @@ RUN apt-get install -y sqlite3 libmysqlclient-dev
 RUN apt-get install -y python-dev python-pip python-setuptools fabric supervisor
 RUN apt-get install -y postgresql-server-dev-all
 RUN pip install psycopg2
-
+RUN apt-get clean
 
 # Install gosu
 RUN curl -o /usr/local/bin/gosu -sSL "https://github.com/tianon/gosu/releases/download/1.2/gosu-$(dpkg --print-architecture)" && chmod +x /usr/local/bin/gosu
